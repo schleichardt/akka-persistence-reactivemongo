@@ -52,7 +52,7 @@ class ReactiveMongoSnapshotStore extends SnapshotStore {
       "sequenceNr" -> BSONDocument("$lte" -> maxSequenceNr),
       "timestamp" -> BSONDocument("$lte" -> maxTimestamp)
     )
-    val sort = BSONDocument("timestamp" -> 1)
+    val sort = BSONDocument("sequenceNr" -> -1)
     collection.find(query).sort(sort).one[SelectedSnapshot]
   }
 }

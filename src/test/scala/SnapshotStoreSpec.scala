@@ -25,6 +25,9 @@ class TestProcessor(override val processorId: String, notificationActor: ActorRe
       notificationActor ! s
     case s@SaveSnapshotFailure(metadata, reason) =>
       notificationActor ! s
+    case Persistent(payload: TestStateClass, sequenceNr) =>
+      state = payload
+      notificationActor ! state
     case _ => //ignore
   }
 }
@@ -47,7 +50,23 @@ trait SnapshotStoreSpec extends SnapshotSpecDetails {
       val processorReincarnation = system.actorOf(TestProcessor.props(processorId, testActor))
       expectMsg(TestProcessor.testState)
     }
-    "multiple snapshots and find the right one" in pending
+    "multiple snapshots and find the right one" in {
+      val processorId = UUID.randomUUID().toString
+      val processor = system.actorOf(TestProcessor.props(processorId, testActor))
+      val to = 9
+      for (i <- 0 to to) {
+        val newState = TestStateClass("bar", i)
+        processor ! Persistent(newState)
+        expectMsg(newState)
+        processor ! "snap"
+        expectMsg("snap")
+        expectMsgType[SaveSnapshotSuccess]
+      }
+      processor ! PoisonPill
+      val processorReincarnation = system.actorOf(TestProcessor.props(processorId, testActor))
+
+      expectMsg(TestStateClass("bar", to))
+    }
     "delete a snapshot" in pending
     "delete all snapshots matching a criteria" in pending
   }
