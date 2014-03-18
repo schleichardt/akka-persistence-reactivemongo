@@ -19,6 +19,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-persistence-experimental" % AkkaVersion,
   "org.scalatest" %% "scalatest" % "2.0" % "test",
   "info.schleichardt" %% "play-2-embed-mongo" % "0.5-SNAPSHOT" % "test" exclude("com.typesafe.play", "play"),
+  "info.schleichardt" %% "akka-persistence-snapshot-testkit" % "0.1-SNAPSHOT" % "test",
   "com.github.krasserm" %% "akka-persistence-testkit" % "0.2" % "test"
 )
 
